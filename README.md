@@ -34,17 +34,22 @@ In `codeship-services.yml` create a service similar to the following:
       image: bluedrop360/gemfury-deploy
       cached: true
       environment:
-        GEMFURY_USERNAME: <username>
-      encrypted_env:
-        - <encrypted GEMFURY_API_TOKEN>
+        GEMFURY_USERNAME: <username value>
+      encrypted_environment:
+        # GEMFURY_API_TOKEN
+        - <encrypted "GEMFURY_API_TOKEN=<token value>", see below>
       volumes:
-        - ./:/repo
+        - ./:/repo/
 
-Mac Instructions for encrypting the base64 encoded environment variables for secure use in `codeship-services.yml` or `codeship-steps.yml`:
-      
-- copy the value of the `GEMFURY_API_TOKEN` environment variable
-- use this command line to convert it into an encrypted value
+*Note:* to create the encrypted_environment value for `GEMFURY_API_TOKEN` on the Mac the following ca be helpful:
 
-      echo "GEMFURY_API_TOKEN=$(pbpaste)" > raw.tmp && jet encrypt raw.tmp crypt.tmp && cat crypt.tmp | pbcopy && rm raw.tmp crypt.tmp
+    printf '%s' "GEMFURY_API_TOKEN=$(pbpaste)" > raw.tmp && jet encrypt raw.tmp crypt.tmp && cat crypt.tmp | pbcopy && rm raw.tmp crypt.tmp
 
-- the values above that have been copied to the clipboard can now be pasted as array items on `encrypted_environment` in either `codeship-services.yml` or `codeship-steps.yml`.
+Copy that onto the command line, then copy the value of GEMFURY_API_TOKEN into your clipboard. Press enter. The command above will use the value in your clipboard, encrypt it, and then copy it back into your clipboard, now encrypted. You can now paste the encrypted value into your `codeship-services.yml` file.
+
+In `codeship-steps.yml` it can be used as a step similar to the following:
+
+    - name: deploy
+      tag: master
+      service: gemfury-deploy
+      command: node deploy.js
