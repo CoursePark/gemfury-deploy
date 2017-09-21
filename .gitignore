@@ -1,0 +1,10 @@
+*
+
+!.dockerignore
+!.gitignore
+!.nvmrc
+!deploy.js
+!Dockerfile
+!package-lock.json
+!package.json
+!README.md
